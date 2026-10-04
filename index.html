@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Prep</title>
+<meta name="description" content="Practice apps for frontend and backend interview questions and coding problems.">
+<meta name="keywords" content="interview questions, frontend, backend, coding interview, algorithms, data structures, practice">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Same window chrome and default (IDE) theme as the three apps. */
+:root{
+  color-scheme:dark;
+  --bg:#11151C; --panel:#161B24; --chrome:#1A1F29; --chrome2:#151A22;
+  --line:#262D38; --line2:#323A47;
+  --fg:#D7DEE9; --dim:#8A94A6; --faint:#5A6474;
+  --kw:#C792EA; --fn:#82AAFF; --str:#C3E88D; --type:#FFCB6B; --acc:#F78C6C;
+  --hov:#1E2430;
+  --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    color-scheme:light;
+    --bg:#F7F8FA; --panel:#FFFFFF; --chrome:#EAEDF2; --chrome2:#E3E7EE;
+    --line:#DCE1E8; --line2:#C3CBD6;
+    --fg:#1F2733; --dim:#5A6474; --faint:#646E7E;
+    --kw:#8B3FB0; --fn:#1F60C4; --str:#27692B; --type:#8A6100; --acc:#AE4715;
+    --hov:#E9EDF3;
+  }
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#F7F8FA; --panel:#FFFFFF; --chrome:#EAEDF2; --chrome2:#E3E7EE;
+  --line:#DCE1E8; --line2:#C3CBD6;
+  --fg:#1F2733; --dim:#5A6474; --faint:#646E7E;
+  --kw:#8B3FB0; --fn:#1F60C4; --str:#27692B; --type:#8A6100; --acc:#AE4715;
+  --hov:#E9EDF3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);display:flex;flex-direction:column}
+.titlebar{display:flex;align-items:center;gap:14px;padding:0 14px;height:40px;flex:0 0 auto;background:var(--chrome);border-bottom:1px solid var(--line)}
+.lights{display:flex;gap:7px}
+.lights i{width:11px;height:11px;border-radius:50%;display:block}
+.lights i:nth-child(1){background:#E0646E}.lights i:nth-child(2){background:#E0B054}.lights i:nth-child(3){background:#7FC08A}
+.crumb{flex:1;min-width:0;font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--fg);font-weight:600}
+.tbtn{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--dim);background:transparent;border:1px solid var(--line2);border-radius:6px;padding:5px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.6}
+.tbtn .g{font-size:13px;line-height:1}
+.tbtn:hover{color:var(--fg);border-color:var(--faint);background:var(--hov)}
+main{flex:1;overflow-y:auto;padding:48px 16px 64px}
+.wrap{max-width:980px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);margin:0 0 10px}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+.lead{color:var(--dim);font-size:17px;line-height:1.6;max-width:62ch;margin:0 0 36px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:10px;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+.card:hover,.card:focus-visible{border-color:var(--c);transform:translateY(-2px);outline:none}
+.card .ic{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--c);border:1px solid var(--line2);border-radius:6px;padding:4px 8px;align-self:flex-start}
+.card h2{font-size:19px;margin:4px 0 0}
+.card p{margin:0;color:var(--dim);line-height:1.55;font-size:14.5px;flex:1}
+.card .go{font-family:var(--mono);font-size:12px;color:var(--c);margin-top:6px}
+.c1{--c:var(--fn)}.c2{--c:var(--str)}.c3{--c:var(--kw)}
+.note{margin-top:36px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--chrome2);color:var(--dim);font-size:14px;line-height:1.6}
+.note b{color:var(--fg);font-weight:600}
+footer{flex:0 0 auto;height:26px;display:flex;align-items:center;padding:0 14px;background:var(--chrome);border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint)}
+@media (max-width:520px){.lights{display:none}main{padding-top:32px}}
+</style>
+</head>
+<body>
+<header class="titlebar">
+  <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="crumb"><b>interview-prep</b> / home</div>
+  <button class="tbtn" id="themeBtn" type="button"><span class="g">◐</span><span id="themeLabel">SYSTEM</span></button>
+</header>
+<main>
+  <div class="wrap">
+    <p class="eyebrow">Interview prep</p>
+    <h1>Practise for every round</h1>
+    <p class="lead">Three practice apps that share one look: knowledge questions for frontend and backend roles, and coding problems with tests that run in the page.</p>
+    <div class="grid">
+      <a class="card c1" href="frontend/">
+        <span class="ic">FE</span>
+        <h2>Frontend Question Bank</h2>
+        <p>JavaScript, React, Next.js, testing, TypeScript, CSS &amp; HTML, the browser and web performance, and frontend system design.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card c2" href="backend/">
+        <span class="ic">BE</span>
+        <h2>Backend Question Bank</h2>
+        <p>Node.js, NestJS, TypeScript, databases, APIs, security, Docker, Redis, messaging, AWS, software design and system design.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card c3" href="code-drill/">
+        <span class="ic">{ }</span>
+        <h2>Code Drill</h2>
+        <p>JavaScript utilities, data structures and algorithms by pattern with beginner lessons, and multi-part class design, with an interview mode.</p>
+        <span class="go">Open →</span>
+      </a>
+    </div>
+    <p class="note"><b>Your progress stays in this browser.</b> To move it from another browser or device, open the app there and use Settings → Export backup, then Settings → Import backup here.</p>
+  </div>
+</main>
+<footer>3 apps · built with Claude Code</footer>
+<script>
+var MODES = ["system", "light", "dark"], KEY = "ip-theme";
+function getMode() { try { return localStorage.getItem(KEY) || "system"; } catch (e) { return "system"; } }
+function applyMode(m) {
+  if (m === "system") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", m);
+  document.getElementById("themeLabel").textContent = m.toUpperCase();
+}
+applyMode(getMode());
+document.getElementById("themeBtn").addEventListener("click", function () {
+  var m = MODES[(MODES.indexOf(getMode()) + 1) % MODES.length];
+  try { localStorage.setItem(KEY, m); } catch (e) {}
+  applyMode(m);
+});
+</script>
+</body>
+</html>
