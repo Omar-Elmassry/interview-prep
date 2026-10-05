@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "Interview Prep",
+  "short_name": "Interview Prep",
+  "description": "Practice apps for frontend and backend interview questions and coding problems. Works offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#11151C",
+  "theme_color": "#11151C",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Frontend Question Bank", "short_name": "Frontend", "url": "frontend/" },
+    { "name": "Backend Question Bank", "short_name": "Backend", "url": "backend/" },
+    { "name": "Code Drill", "short_name": "Code Drill", "url": "code-drill/" }
+  ]
+}

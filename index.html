@@ -6,10 +6,9 @@
 <title>Interview Prep</title>
 <meta name="description" content="Practice apps for frontend and backend interview questions and coding problems.">
 <meta name="keywords" content="interview questions, frontend, backend, coding interview, algorithms, data structures, practice">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2311151C'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' text-anchor='middle' fill='%23F78C6C'%3E%7B%7D%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
 /* Same window chrome and default (IDE) theme as the three apps. */
 :root{
@@ -70,6 +69,25 @@ h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0 0 12px;letter-spacin
 footer{flex:0 0 auto;height:26px;display:flex;align-items:center;padding:0 14px;background:var(--chrome);border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint)}
 @media (max-width:520px){.lights{display:none}main{padding-top:32px}}
 </style>
+<!-- PWA:START (added by publish.sh) -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="theme-color" content="#11151C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Interview Prep">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script>
+if ("serviceWorker" in navigator) {
+  addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+    // Ask the browser not to clear saved progress when storage runs low.
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  });
+}
+</script>
+<!-- PWA:END -->
 </head>
 <body>
 <header class="titlebar">

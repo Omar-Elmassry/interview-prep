@@ -1407,6 +1407,25 @@ td .linkish + .linkish{margin-left:12px}
   h1.t{font-size:22px}
 }
 </style>
+<!-- PWA:START (added by publish.sh) -->
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="theme-color" content="#11151C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Interview Prep">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script>
+if ("serviceWorker" in navigator) {
+  addEventListener("load", function () {
+    navigator.serviceWorker.register("../sw.js", { scope: "../" }).catch(function () {});
+    // Ask the browser not to clear saved progress when storage runs low.
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  });
+}
+</script>
+<!-- PWA:END -->
 </head>
 <body>
 <div class="ide">
