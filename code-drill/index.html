@@ -1174,6 +1174,8 @@ td:first-child{color:var(--fg)}
 .pill.medium{color:var(--type);border-color:var(--line2)}
 .pill.hard{color:var(--err);border-color:var(--badLine)}
 .pill.classic{color:var(--kw);border-color:var(--hiLine)}
+.pill.imp3{color:var(--acc);border-color:var(--acc)}
+.pill.imp1{border-style:dashed}
 .q-timer{font-family:var(--mono);font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:7px;background:var(--inset);border:1px solid var(--line);font-variant-numeric:tabular-nums}
 .q-timer .g{color:var(--acc)}
 .q-timer.frozen{color:var(--dim)}
@@ -1895,6 +1897,12 @@ function applyBrandColors() {
 }
 const DIFFS = ["easy", "medium", "hard"];
 const DEFAULT_MINUTES = { easy: 15, medium: 25, hard: 40 };
+// Importance (references/problem-schema.md): how likely a coding round asks it. Optional;
+// when no problem in the bank has it, the Classics filter shows instead.
+const IMPS = [[3, "Must know"], [2, "Common"], [1, "Deep cut"]];
+const impOf = (p) => ([1, 2, 3].includes(p.importance) ? p.importance : 0);
+let impKnown = null;
+const hasImp = () => (impKnown ??= [...P.values()].some(impOf));
 
 function checkProblem(p, cat) {
   if (!p || typeof p.id !== "string" || !p.id) return "missing id";
@@ -2012,6 +2020,7 @@ registerCategory({
       title: "once",
       topic: "closures",
       difficulty: "easy",
+      importance: 2,
       classic: true,
       targetMinutes: 10,
       yours: "gfe-lodash-once.ts",
@@ -2130,6 +2139,7 @@ A separate flag matters because \`fn\` can legitimately return \`undefined\`, \`
       title: "memoize",
       topic: "closures",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       yours: "gfe-memoize2.ts",
@@ -2260,6 +2270,7 @@ describe("memoize", () => {
       title: "compose and pipe",
       topic: "closures",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 15,
       yours: "gfe-compose.ts",
       prompt: `Implement two functions that chain other functions into one.
@@ -2376,6 +2387,7 @@ describe("compose and pipe", () => {
       title: "curry",
       topic: "closures",
       difficulty: "hard",
+      importance: 2,
       classic: true,
       targetMinutes: 30,
       yours: "gfe-curry2.ts",
@@ -2488,6 +2500,7 @@ Each partial function captures its own \`args\` array and never changes it, whic
       title: "Cancellable interval",
       topic: "timers",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 10,
       yours: "gfe-setCancelableInterval.ts",
       prompt: `Implement \`setCancellableInterval(callback, delay, ...args)\`. It calls \`callback(...args)\` every \`delay\` milliseconds and returns a **cancel** function.
@@ -2600,6 +2613,7 @@ describe("setCancellableInterval", () => {
       title: "debounce with cancel and flush",
       topic: "timers",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 25,
       yours: "gfe-debounce2.ts",
@@ -2788,6 +2802,7 @@ describe("debounce", () => {
       title: "throttle (leading and trailing)",
       topic: "timers",
       difficulty: "hard",
+      importance: 3,
       classic: true,
       targetMinutes: 30,
       yours: "gfe-throttle.ts",
@@ -2944,6 +2959,7 @@ describe("throttle", () => {
       title: "Cache with expiring keys",
       topic: "timers",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       yours: "second-pass/leetcode-TimeLimitedCache.ts",
@@ -3116,6 +3132,7 @@ Another valid design stores \`expiresAt = Date.now() + duration\` and checks it 
       title: "promisify",
       topic: "promises",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       yours: "gfe-promisify.ts",
       prompt: `Implement \`promisify(fn)\`. \`fn\` uses the Node.js callback style: its last parameter is a callback \`(err, value) => void\`.
@@ -3222,6 +3239,7 @@ The executor runs synchronously, and a throw inside it rejects the promise. That
       title: "Promise.all",
       topic: "promises",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       yours: "gfe-promise.all.ts",
@@ -3355,6 +3373,7 @@ describe("promiseAll", () => {
       title: "Promise.allSettled",
       topic: "promises",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 20,
       yours: "gfe-promise.allSettled.ts",
       prompt: `Implement \`promiseAllSettled(items)\`, your own version of \`Promise.allSettled\`. Don't call \`Promise.allSettled\` or the other built-in combinators.
@@ -3508,6 +3527,7 @@ describe("promiseAllSettled", () => {
       title: "Promise.any",
       topic: "promises",
       difficulty: "hard",
+      importance: 1,
       targetMinutes: 25,
       yours: "gfe-promise.any.ts",
       prompt: `Implement \`promiseAny(items)\`, your own version of \`Promise.any\`. Don't call \`Promise.any\` or the other built-in combinators.
@@ -3642,6 +3662,7 @@ Failures are counted. Each writes its reason into \`errors[i]\`, which keeps inp
       title: "Promise with a time limit",
       topic: "async-control",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       yours: "gfe-promiseTimeout.ts",
       prompt: `Implement \`promiseTimeout(promise, ms)\`. Return a new promise that settles the same way as \`promise\` if it settles within \`ms\` milliseconds.
@@ -3767,6 +3788,7 @@ A promise settles only once, so whichever runs second is ignored. That's what ma
       title: "Retry with growing delays",
       topic: "async-control",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 25,
       prompt: `Implement \`retryWithBackoff(fn, { retries, baseDelay })\`. \`fn\` takes no arguments and returns a promise.
 
@@ -3923,6 +3945,7 @@ describe("retryWithBackoff", () => {
       title: "Share in-flight requests",
       topic: "async-control",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 20,
       prompt: `Implement \`dedupeRequests(fetcher)\`. \`fetcher(key)\` starts some async work and returns a promise. Return a function \`get(key)\` that avoids duplicate work:
 
@@ -4057,6 +4080,7 @@ Storing the promise **before** it settles is the key. Storing results would only
       title: "Map with limited concurrency",
       topic: "async-control",
       difficulty: "hard",
+      importance: 2,
       targetMinutes: 30,
       yours: "gfe-mapAsyncLimit.ts",
       prompt: `Implement \`mapAsyncLimit(items, fn, limit)\`. \`fn(item, index)\` returns a promise. Run \`fn\` on every item, but with **at most \`limit\` calls in flight** at any moment.
@@ -4241,6 +4265,7 @@ registerCategory({
       title: "instanceOf",
       topic: "this-binding",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 10,
       classic: true,
       prompt: `Implement \`instanceOf(value, Ctor)\`. It returns \`true\` when \`Ctor.prototype\` appears anywhere in the prototype chain of \`value\`, and \`false\` otherwise.
@@ -4360,6 +4385,7 @@ This is what the \`instanceof\` operator does by default, minus the \`Symbol.has
       title: "call and apply",
       topic: "this-binding",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement two standalone functions that run \`fn\` with a chosen \`this\`:
@@ -4538,6 +4564,7 @@ describe("myCall and myApply", () => {
       title: "Implement new",
       topic: "this-binding",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement \`myNew(Ctor, ...args)\`, which does what \`new Ctor(...args)\` does for an ordinary constructor function.
@@ -4676,6 +4703,7 @@ The fallback to \`Object.prototype\` matches the spec for a constructor whose \`
       title: "bind",
       topic: "this-binding",
       difficulty: "hard",
+      importance: 2,
       targetMinutes: 30,
       classic: true,
       prompt: `Implement \`myBind(fn, thisArg, ...boundArgs)\`. It returns a new function that, when called, runs \`fn\` with \`this\` set to \`thisArg\` and the arguments \`boundArgs\` followed by the arguments of the call. It returns whatever \`fn\` returns.
@@ -4830,6 +4858,7 @@ Setting \`bound.prototype = fn.prototype\` makes those fresh objects inherit \`f
       title: "Camel-case all keys",
       topic: "deep-objects",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 12,
       prompt: `An API returns snake_case keys such as \`first_name\`, and your frontend wants camelCase keys such as \`firstName\`. Implement \`camelCaseKeys(value)\`, which returns a **new** value with every object key converted, at every depth.
 
@@ -4954,6 +4983,7 @@ Building new arrays and objects instead of editing the old ones keeps the input 
       title: "Read a value by path",
       topic: "deep-objects",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement \`get(obj, path, defaultValue)\`, in the style of lodash's \`get\`. It reads a value deep inside \`obj\` and returns it, or returns \`defaultValue\` when the value isn't there.
@@ -5073,6 +5103,7 @@ At the end, only \`undefined\` means "missing". Using \`=== undefined\` keeps re
       title: "Deep equal",
       topic: "deep-objects",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement \`deepEqual(a, b)\`. It returns \`true\` when the two values have the same structure and contents, and \`false\` otherwise.
@@ -5200,6 +5231,7 @@ describe("deepEqual", () => {
       title: "Deep clone",
       topic: "deep-objects",
       difficulty: "hard",
+      importance: 3,
       targetMinutes: 30,
       classic: true,
       prompt: `Implement \`deepClone(value)\`. It returns a copy of \`value\` that shares no objects with the original, so changing the copy never changes the original.
@@ -5385,6 +5417,7 @@ Registering the empty copy first is what stops infinite recursion: when a child 
       title: "groupBy",
       topic: "arrays",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       classic: true,
       prompt: `Implement \`groupBy(items, iteratee)\`, in the style of lodash's \`groupBy\`. It returns an object whose keys are group names and whose values are arrays of the items in that group.
@@ -5503,6 +5536,7 @@ The own-property check matters: a plain \`{}\` already inherits \`toString\` and
       title: "Array reduce",
       topic: "arrays",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement a standalone \`reduce(arr, fn, initialValue)\` that behaves like \`Array.prototype.reduce\`. Don't call the built-in \`reduce\` or \`reduceRight\`.
@@ -5665,6 +5699,7 @@ describe("reduce", () => {
       title: "Squash a nested object",
       topic: "arrays",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement \`squashObject(obj)\`. It turns a nested object into a flat object with one key per leaf value. A **leaf** is any value that is not a plain object or an array. The key is the path to the leaf, with the keys along the way joined by dots.
@@ -5782,6 +5817,7 @@ An empty container has no entries, so the loop does nothing and it adds no keys.
       title: "Flatten to a depth",
       topic: "arrays",
       difficulty: "hard",
+      importance: 3,
       targetMinutes: 30,
       classic: true,
       prompt: `Implement \`flatten(arr, depth = 1)\`, which behaves like \`arr.flat(depth)\`. Don't call \`Array.prototype.flat\` or \`flatMap\`.
@@ -5918,6 +5954,7 @@ Pushing in reverse makes the stack hand items back in their original order, so t
       title: "Mini Redux store",
       topic: "events",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 15,
       classic: true,
       prompt: `Implement \`createStore(reducer, initialState)\`, a tiny version of a Redux store. A **reducer** is a function \`(state, action) => newState\` that computes the next state from the current one and an action object.
@@ -6100,6 +6137,7 @@ describe("createStore", () => {
       title: "Event emitter",
       topic: "events",
       difficulty: "medium",
+      importance: 3,
       targetMinutes: 25,
       classic: true,
       prompt: `Implement an \`EventEmitter\` class. Code registers **listeners** (callback functions) for named events, and \`emit\` calls them.
@@ -6334,6 +6372,7 @@ Returning \`this\` from the registration methods gives chaining.`,
       title: "Middleware pipeline",
       topic: "events",
       difficulty: "hard",
+      importance: 1,
       targetMinutes: 35,
       classic: true,
       prompt: `Implement \`compose(middlewares)\` in the style of Koa, a Node web framework. It takes an array of **middleware** functions and returns one function \`run(ctx, next?)\` that runs them as a pipeline and returns a promise.
@@ -6550,6 +6589,7 @@ describe("compose", () => {
       title: "classnames",
       topic: "strings",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       classic: true,
       prompt: `Implement \`classNames(...args)\`, like the popular \`classnames\` package that builds a CSS \`class\` attribute. It returns one string of class names separated by single spaces.
@@ -6663,6 +6703,7 @@ A \`Set\` remembers insertion order and ignores repeats, so it gives "first posi
       title: "Format a list in English",
       topic: "strings",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 20,
       classic: true,
       prompt: `Implement \`listFormat(items, options)\`. It turns an array of strings into a readable English list, the kind you see in "Ada, Linus and 2 others liked this".
@@ -6796,6 +6837,7 @@ describe("listFormat", () => {
       title: "JSON.stringify",
       topic: "strings",
       difficulty: "hard",
+      importance: 1,
       targetMinutes: 35,
       classic: true,
       prompt: `Implement \`jsonStringify(value)\`, which matches \`JSON.stringify(value)\` (no \`replacer\` or \`space\` arguments) for the cases below. Don't call \`JSON.stringify\`.
@@ -8929,6 +8971,7 @@ registerCategory({
       title: "Largest Number",
       topic: "foundations",
       difficulty: "easy",
+      importance: 1,
       guided: true,
       targetMinutes: 8,
       prompt: `Write \`largestNumber(nums)\` that returns the largest number in the array \`nums\`.
@@ -9006,6 +9049,7 @@ When the loop ends, \`best\` has been compared with every element, so nothing in
       title: "Reverse an Array In Place",
       topic: "foundations",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 10,
       prompt: `Write \`reverseInPlace(arr)\` that reverses the array \`arr\` **in place**: change the array you were given, so its first item becomes its last, and so on.
 
@@ -9095,6 +9139,7 @@ Each swap fixes two positions, so there are about n / 2 swaps: **O(n)** time. On
       title: "Count Words",
       topic: "foundations",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 10,
       prompt: `Write \`countWords(text)\` that returns a \`Map\` from each word in \`text\` to the number of times it appears.
 
@@ -9178,6 +9223,7 @@ A \`Map\` remembers the order keys were first added, so the result is in order o
       title: "First Repeated Character",
       topic: "foundations",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 10,
       prompt: `Write \`firstRepeat(s)\` that reads the string \`s\` from left to right and returns the **first character that you have already seen earlier** in the string.
 
@@ -9255,6 +9301,7 @@ Because you stop at the first repeat you meet while reading left to right, you r
       title: "Sum a Nested Array",
       topic: "foundations",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 10,
       prompt: `Write \`sumNested(items)\` that adds up every number inside \`items\`, however deeply the arrays are nested.
 
@@ -9339,6 +9386,7 @@ test("handles very deep nesting", () => {
       title: "Count Down List",
       topic: "foundations",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 8,
       prompt: `Write \`countDown(n)\` that returns the array \`[n, n - 1, …, 2, 1]\`.
 
@@ -9410,6 +9458,7 @@ Each call makes \`n\` one smaller, so it always reaches 0. There are n calls. Co
       title: "Merge Two Sorted Arrays",
       topic: "foundations",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       prompt: `Write \`mergeSorted(a, b)\` that takes two arrays of numbers, each already sorted from smallest to largest, and returns **one new array** with all their numbers, also sorted from smallest to largest.
 
@@ -9504,6 +9553,7 @@ Each number is pushed exactly once: **O(n + m)** time for arrays of length n and
       title: "Second Largest Value",
       topic: "foundations",
       difficulty: "easy",
+      importance: 1,
       targetMinutes: 12,
       prompt: `Write \`secondLargest(nums)\` that returns the second largest **distinct** value in \`nums\`.
 
@@ -9594,6 +9644,7 @@ Starting both at \`-Infinity\` means any real number beats them. If \`second\` i
       title: "Two Sum",
       topic: "hashing",
       difficulty: "easy",
+      importance: 3,
       guided: true,
       classic: true,
       targetMinutes: 12,
@@ -9674,6 +9725,7 @@ Walk once, keeping \`seen\`: value → index. At each \`i\`, check whether the p
       title: "Valid Anagram",
       topic: "hashing",
       difficulty: "easy",
+      importance: 2,
       classic: true,
       targetMinutes: 12,
       prompt: `Two strings are **anagrams** if one is a rearrangement of the other: the same characters, each used the same number of times. For example \`"race"\` and \`"care"\`.
@@ -9765,6 +9817,7 @@ If you get through \`b\`, no count went negative. The lengths are equal, so the 
       title: "Group Anagrams",
       topic: "hashing",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `Two words are **anagrams** if one is a rearrangement of the other's letters, such as \`"stop"\` and \`"pots"\`.
@@ -9868,6 +9921,7 @@ For n words of at most L letters: sorting each word costs O(L log L), so **O(n �
       title: "Count Subarrays With Sum K",
       topic: "hashing",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `A **subarray** is a run of one or more neighbouring items in an array. For \`[2, 1, -1]\` the subarrays are \`[2]\`, \`[1]\`, \`[-1]\`, \`[2, 1]\`, \`[1, -1]\` and \`[2, 1, -1]\`.
@@ -9970,6 +10024,7 @@ registerCategory({
       title: "Valid Palindrome",
       topic: "two-pointers",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       classic: true,
       targetMinutes: 12,
@@ -10068,6 +10123,7 @@ When the indexes meet or cross, every pair has matched, so the answer is \`true\
       title: "Pair Sum in a Sorted List",
       topic: "two-pointers",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 12,
       prompt: `You're given an array \`nums\` sorted in **non-decreasing** order (each number is greater than or equal to the one before it) and a number \`target\`. Find two **different positions** \`i < j\` with \`nums[i] + nums[j] === target\`.
 
@@ -10156,6 +10212,7 @@ Each step throws away one element for good, so the loop runs at most n times.`,
       title: "Three Sum",
       topic: "two-pointers",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `Given an array of integers \`nums\`, return every **unique** triplet of values \`[a, b, c]\` taken from three different positions such that \`a + b + c === 0\`.
@@ -10265,6 +10322,7 @@ The outer loop runs n times and the inner scan is O(n), so it's O(n²). That bea
       title: "Container With Most Water",
       topic: "two-pointers",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `You're given an array \`heights\` of non-negative integers. Picture a vertical wall of height \`heights[i]\` standing at position \`i\` on a line. Choose two walls \`i < j\`; together with the ground they hold water.
@@ -10360,6 +10418,7 @@ Each step rules out one wall for good, so after n − 1 steps you've considered 
       title: "Largest Sum of k in a Row",
       topic: "sliding-window",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       targetMinutes: 12,
       prompt: `Given an array of integers \`nums\` and a whole number \`k\`, return the **largest sum** of any \`k\` **consecutive** elements (elements that sit next to each other in the array).
@@ -10446,6 +10505,7 @@ test("handles 100,000 numbers with a large k quickly", () => {
       title: "Best Day to Buy and Sell",
       topic: "sliding-window",
       difficulty: "easy",
+      importance: 3,
       classic: true,
       targetMinutes: 12,
       prompt: `\`prices[i]\` is the price of a share on day \`i\`. You may buy **one** share on one day and sell it on a **later** day. Return the **largest profit** you can make (sell price minus buy price).
@@ -10533,6 +10593,7 @@ Think of the buy day as the left edge of a range and today as the right edge. Th
       title: "Longest Substring Without Repeats",
       topic: "sliding-window",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       prompt: `Given a string \`s\`, return the **length** of the longest **substring** (a run of characters that sit next to each other) in which no character appears twice.
@@ -10626,6 +10687,7 @@ For each new \`right\`:
       title: "Shortest Covering Substring",
       topic: "sliding-window",
       difficulty: "hard",
+      importance: 1,
       classic: true,
       targetMinutes: 35,
       prompt: `Given two strings \`s\` and \`t\`, return the **shortest substring** of \`s\` (a run of characters next to each other) that contains every character of \`t\`, **including repeats**. If \`t\` has two \`a\`s, the substring needs at least two \`a\`s.
@@ -10739,6 +10801,7 @@ Negative counts mean spare copies, so dropping one of those keeps the range vali
       title: "Valid Brackets",
       topic: "stack",
       difficulty: "easy",
+      importance: 3,
       guided: true,
       classic: true,
       targetMinutes: 12,
@@ -10837,6 +10900,7 @@ Popping from an empty array returns \`undefined\`, which never equals an opener,
       title: "Pile With Instant Minimum",
       topic: "stack",
       difficulty: "easy",
+      importance: 2,
       targetMinutes: 15,
       prompt: `Write a class \`MinStack\` that holds a pile of numbers. You add to the top and remove from the top: the last number added is the first one removed. It also reports the smallest number currently in the pile.
 
@@ -11003,6 +11067,7 @@ Pushing \`x\` adds \`Math.min(x, previous minimum)\` to \`mins\`. Popping remove
       title: "Evaluate Reverse Polish Notation",
       topic: "stack",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 20,
       prompt: `In **reverse Polish notation** (RPN), an operator comes **after** its two operands. For example \`3 4 +\` means \`3 + 4\`, and \`3 4 + 2 *\` means \`(3 + 4) * 2\`. No brackets are needed.
 
@@ -11104,6 +11169,7 @@ When the tokens run out, exactly one value is left: the answer. \`Math.trunc\` d
       title: "Days Until Warmer",
       topic: "stack",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `\`temps[i]\` is the temperature on day \`i\`. Return an array \`answer\` of the same length where \`answer[i]\` is the number of days you wait after day \`i\` until a **strictly warmer** day.
@@ -11208,6 +11274,7 @@ registerCategory({
       title: "Find a Number in a Sorted Array",
       topic: "binary-search",
       difficulty: "easy",
+      importance: 3,
       guided: true,
       classic: true,
       targetMinutes: 10,
@@ -11301,6 +11368,7 @@ When \`lo\` passes \`hi\` the range is empty, so \`target\` isn't there. Each st
       title: "Where Would It Go?",
       topic: "binary-search",
       difficulty: "easy",
+      importance: 1,
       classic: true,
       targetMinutes: 12,
       prompt: `Given an array of numbers \`nums\` sorted in **ascending** order and a number \`target\`, return the index of \`target\` if it's in the array. If it isn't, return the index where it **would be inserted** to keep the array sorted.
@@ -11388,6 +11456,7 @@ If you don't, the loop keeps this rule true the whole time: every index below \`
       title: "First and Last Position of a Value",
       topic: "binary-search",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `Given an array of integers \`nums\` sorted in **ascending** order (it may contain **duplicates**) and an integer \`target\`, return \`[first, last]\`: the index of the first and the last occurrence of \`target\`.
@@ -11501,6 +11570,7 @@ Each search is O(log n), however long the run is. If the first search finds noth
       title: "Search a Rotated Sorted Array",
       topic: "binary-search",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `An array of **distinct** numbers was sorted in ascending order and then **rotated**: some number of elements were moved from the front to the back, keeping their order. For example \`[3, 6, 9, 11, 15, 18, 22]\` rotated by 4 becomes \`[15, 18, 22, 3, 6, 9, 11]\`. The rotation may be 0, so the array may still be fully sorted.
@@ -11606,6 +11676,7 @@ For the sorted half you know its smallest and largest value, so you can check wh
       title: "Can You Attend Every Meeting?",
       topic: "intervals",
       difficulty: "easy",
+      importance: 1,
       guided: true,
       classic: true,
       targetMinutes: 10,
@@ -11692,6 +11763,7 @@ One loop after the sort, so the sort dominates.`,
       title: "Merge Overlapping Ranges",
       topic: "intervals",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       prompt: `Given a list of ranges \`[start, end]\` with \`start <= end\`, merge every group of ranges that overlap and return the result: the fewest ranges that cover exactly the same numbers.
@@ -11788,6 +11860,7 @@ Because the ranges come in start order, a later range can never reach back and o
       title: "Insert a New Range",
       topic: "intervals",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `You're given \`intervals\`, a list of ranges \`[start, end]\` that is **already sorted by start** and has **no overlaps**, and one more range \`newInterval\`. Add \`newInterval\` and return the list, still sorted by start and with no overlaps, merging wherever the new range overlaps existing ones.
@@ -11881,6 +11954,7 @@ Walk the list once with one index, moving through the three parts in order. Push
       title: "Fewest Ranges to Drop",
       topic: "intervals",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 25,
       prompt: `Given a list of ranges \`[start, end]\` with \`start < end\`, return the **fewest** ranges you must remove so that none of the remaining ranges overlap.
@@ -11973,6 +12047,7 @@ Why finishing earliest is safe: suppose some best answer keeps a different first
       title: "Reverse a Linked List",
       topic: "linked-list",
       difficulty: "easy",
+      importance: 3,
       guided: true,
       classic: true,
       targetMinutes: 12,
@@ -12092,6 +12167,7 @@ When \`cur\` becomes \`null\` you've flipped every node, and \`prev\` is the old
       title: "Merge Two Sorted Linked Lists",
       topic: "linked-list",
       difficulty: "easy",
+      importance: 2,
       classic: true,
       targetMinutes: 12,
       prompt: `You're given the heads of two singly linked lists, \`a\` and \`b\`. Each list is sorted in **ascending** order. Combine them into one ascending list and return its head.
@@ -12211,6 +12287,7 @@ When one list runs out, the other's remaining nodes are sorted and all at least 
       title: "Does the List Loop Back?",
       topic: "linked-list",
       difficulty: "easy",
+      importance: 2,
       classic: true,
       targetMinutes: 12,
       prompt: `Given the \`head\` of a singly linked list, return \`true\` if the list contains a **cycle**: some node's \`next\` points back to a node earlier in the list, so following \`next\` never reaches \`null\`. Otherwise return \`false\`.
@@ -12323,6 +12400,7 @@ They meet within about one lap of the loop after \`slow\` enters it, so the time
       title: "Remove the Nth Node from the End",
       topic: "linked-list",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 20,
       prompt: `Given the \`head\` of a singly linked list and a number \`n\`, remove the \`n\`-th node **counting from the end** (\`n = 1\` is the last node) and return the head of the changed list.
@@ -12446,6 +12524,7 @@ registerCategory({
       title: "Maximum Depth of a Binary Tree",
       topic: "trees",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       classic: true,
       targetMinutes: 10,
@@ -12637,6 +12716,7 @@ Each node is visited once. The recursion goes as deep as the tree is tall, so a 
       title: "Mirror a Binary Tree",
       topic: "trees",
       difficulty: "easy",
+      importance: 2,
       classic: true,
       targetMinutes: 10,
       prompt: `Given the \`root\` of a binary tree, turn it into its **mirror image**: at every node, the left and right children swap places. Return the root of the mirrored tree.
@@ -12816,6 +12896,7 @@ Every node is visited once and swapped once. The work happens in place, so no ne
       title: "Tree Values Row by Row",
       topic: "trees",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       prompt: `Given the \`root\` of a binary tree, return its values **row by row**, from the top row down. Each row is an array of values read from left to right.
@@ -12995,6 +13076,7 @@ Each row array plays the part of a **queue**: a line where items leave in the or
       title: "Validate a Binary Search Tree",
       topic: "trees",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `Given the \`root\` of a binary tree, return \`true\` if it is a valid **binary search tree** and \`false\` otherwise.
@@ -13181,6 +13263,7 @@ If any node falls outside its range (including being equal to a bound), the tree
       title: "Flood Fill",
       topic: "graphs",
       difficulty: "easy",
+      importance: 1,
       guided: true,
       targetMinutes: 15,
       prompt: `An image is a grid of numbers, \`image[row][col]\`, where each number is a colour. Starting from the pixel at \`(sr, sc)\`, repaint it and every pixel **connected** to it that has the **same starting colour** with \`color\`.
@@ -13338,6 +13421,7 @@ Painting a pixel marks it as visited, so no extra "seen" set is needed. A recurs
       title: "Count the Islands",
       topic: "graphs",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       prompt: `You get a map as a grid of \`1\`s (land) and \`0\`s (water). An **island** is a group of land cells joined **up, down, left or right**. Cells that touch only diagonally belong to different islands. Everything outside the grid is water.
@@ -13498,6 +13582,7 @@ Each cell is turned to water at most once and looked at a constant number of tim
       title: "Can You Finish Every Course?",
       topic: "graphs",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `There are \`numCourses\` courses, numbered \`0\` to \`numCourses - 1\`. Each pair \`[a, b]\` in \`prerequisites\` means you must finish course \`b\` **before** you can take course \`a\`.
@@ -13642,6 +13727,7 @@ A course inside a cycle always waits on another course in the same cycle, so its
       title: "Plan the Course Order",
       topic: "graphs",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 25,
       prompt: `There are \`numCourses\` courses, numbered \`0\` to \`numCourses - 1\`. Each pair \`[a, b]\` in \`prerequisites\` means course \`b\` must come **before** course \`a\`.
 
@@ -13818,6 +13904,7 @@ A course is appended only after all its prerequisites were taken, so every pair 
       title: "Last Stone Weight",
       topic: "heap",
       difficulty: "easy",
+      importance: 1,
       guided: true,
       classic: true,
       targetMinutes: 15,
@@ -13980,6 +14067,7 @@ With a heap, each turn is O(log n), and there are at most n turns.`,
       title: "Kth Largest Number",
       topic: "heap",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `Given an array of numbers \`nums\` and a number \`k\`, return the **k-th largest** value: the value that would sit at position \`k\` (counting from 1) if the array were sorted from largest to smallest.
@@ -14155,6 +14243,7 @@ The heap never grows past k + 1, so each push or pop costs O(log k), and the tot
       title: "Top K Most Frequent Numbers",
       topic: "heap",
       difficulty: "medium",
+      importance: 3,
       classic: true,
       targetMinutes: 20,
       prompt: `Given an array of numbers \`nums\` and a number \`k\`, return the \`k\` numbers that appear **most often**.
@@ -14330,6 +14419,7 @@ The order of the result doesn't matter, so the heap's internal order is fine to 
       title: "Merge K Sorted Arrays",
       topic: "heap",
       difficulty: "hard",
+      importance: 1,
       targetMinutes: 30,
       prompt: `You get \`arrays\`, a list of arrays where each one is already sorted from smallest to largest. Return **one** sorted array (smallest to largest) that contains every number from all of them.
 
@@ -14541,6 +14631,7 @@ The heap never holds more than k entries (one per array), so each step costs O(l
       title: "Climbing Stairs",
       topic: "dp",
       difficulty: "easy",
+      importance: 3,
       guided: true,
       classic: true,
       targetMinutes: 10,
@@ -14654,6 +14745,7 @@ You only ever read the last two values, so two variables can replace the table f
       title: "House Robber",
       topic: "dp",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `A row of houses each holds some cash: \`houses[i]\` is the amount in house \`i\`. You may pick any set of houses to take from, but you can **never take from two houses next to each other** (the alarms are linked).
@@ -14796,6 +14888,7 @@ Trying every subset directly is O(2ⁿ). The table computes each \`best[i]\` onc
       title: "Fewest Coins",
       topic: "dp",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `You have coin values in \`coins\` and an unlimited supply of each. Return the **fewest coins** that add up to exactly \`amount\`. If no combination makes that amount, return \`-1\`.
@@ -14913,6 +15006,7 @@ Plain recursion tries the same smaller amounts over and over, which is exponenti
       title: "Longest Common Subsequence",
       topic: "dp",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 25,
       prompt: `Given two strings \`a\` and \`b\`, return the length of their **longest common subsequence**.
@@ -15291,6 +15385,7 @@ for (const [a, b] of friendships) {
       title: "Count the Networks",
       topic: "union-find",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       classic: true,
       targetMinutes: 15,
@@ -15450,6 +15545,7 @@ Every merge removes exactly one network, so the count left at the end is the ans
       title: "The Extra Road",
       topic: "union-find",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 20,
       prompt: `A region has \`n\` villages numbered \`1\` to \`n\`. The plan was to connect them with exactly \`n - 1\` two-way roads, so that every village could reach every other and there was **no loop** (no way to leave a village and come back without using a road twice).
@@ -15587,6 +15683,7 @@ Why is this the **last** loop road in the input? The loop's roads are the only c
       title: "Merge User Accounts",
       topic: "union-find",
       difficulty: "hard",
+      importance: 1,
       classic: true,
       targetMinutes: 35,
       prompt: `A site has a list of \`accounts\`. Each account is an array whose first item is a person's **name** and whose other items are **email addresses**, for example \`["Ana", "ana@work.io", "ana@home.io"]\`.
@@ -16017,6 +16114,7 @@ function countPrefixes(words: string[], queries: string[]): number[] {
       title: "Word Index with Prefix Lookups",
       topic: "tries",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       classic: true,
       targetMinutes: 15,
@@ -16243,6 +16341,7 @@ Each call costs one step per letter of its argument, however many words are stor
       title: "Dictionary with Wildcard Search",
       topic: "tries",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 25,
       prompt: `Build a class \`PatternDictionary\` that stores words and checks patterns against them.
@@ -16462,6 +16561,7 @@ The walk only branches at dots, and there are at most 3 of them, so each search 
       title: "Search Box Suggestions",
       topic: "tries",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 25,
       fileName: "search-suggestions.ts",
@@ -16768,6 +16868,7 @@ balancedBrackets(3); // ["((()))", "(()())", "(())()", "()(())", "()()()"]`,
       title: "All Subsets",
       topic: "backtracking",
       difficulty: "easy",
+      importance: 2,
       guided: true,
       classic: true,
       targetMinutes: 15,
@@ -16884,6 +16985,7 @@ A loop-only version also works: start with \`[[]]\`, and for each number add a c
       title: "Every Ordering",
       topic: "backtracking",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 20,
       prompt: `Given an array \`nums\` of **distinct** integers, return **every ordering** of it. An ordering uses each number exactly once, and \`[4, 6]\` and \`[6, 4]\` count as **different** orderings.
@@ -17002,6 +17104,7 @@ There are n! orderings, and saving each one copies n numbers.`,
       title: "Make the Total",
       topic: "backtracking",
       difficulty: "medium",
+      importance: 1,
       classic: true,
       targetMinutes: 25,
       prompt: `You get an array \`candidates\` of **distinct positive** integers and a positive integer \`target\`. Return **every combination** of candidates that adds up to exactly \`target\`.
@@ -17129,6 +17232,7 @@ Because every candidate is at least 1, \`remaining\` drops on every step, so the
       title: "Find the Word in the Grid",
       topic: "backtracking",
       difficulty: "medium",
+      importance: 2,
       classic: true,
       targetMinutes: 25,
       prompt: `You get a grid of capital letters, \`grid[row][col]\`, and a \`word\`. Return \`true\` if the word can be spelled by moving from cell to cell, and \`false\` otherwise.
@@ -17296,6 +17400,7 @@ registerCategory({
       title: "Shopping cart",
       topic: "lookup",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 35,
       prompt: `An online shop needs a cart. Build a \`ShoppingCart\` class that tracks what is in the cart and what it costs.
 
@@ -17659,6 +17764,7 @@ export default class ShoppingCart {
       title: "Bank ledger",
       topic: "lookup",
       difficulty: "hard",
+      importance: 2,
       targetMinutes: 45,
       prompt: `A small bank keeps a ledger of accounts and money movements. Build a \`BankLedger\` class.
 
@@ -18025,6 +18131,7 @@ Because rollback always removes the **newest** live transaction, that transactio
       title: "Support ticket queue",
       topic: "ordering",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 35,
       prompt: `A support desk hands out tickets to agents. Build a \`TicketQueue\` class.
 
@@ -18372,6 +18479,7 @@ The scan in \`peek\` is O(open tickets), which is fine for an interview with a f
       title: "Text editor with undo",
       topic: "queues-stacks",
       difficulty: "medium",
+      importance: 2,
       targetMinutes: 35,
       prompt: `Build the core of a plain-text editor as a \`TextEditor\` class.
 
@@ -18721,6 +18829,7 @@ This works because edits are undone in reverse order: when an edit is undone, th
       title: "API rate limiter",
       topic: "time-windows",
       difficulty: "medium",
+      importance: 3,
       targetMinutes: 30,
       prompt: `An API gateway limits how often each user can call it. Build a \`RateLimiter\` class.
 
@@ -19002,6 +19111,7 @@ Each time is added once and skipped once, so the work is O(1) amortized per call
       title: "Mini spreadsheet",
       topic: "dependencies",
       difficulty: "hard",
+      importance: 1,
       targetMinutes: 45,
       prompt: `Build a tiny spreadsheet engine as a \`Spreadsheet\` class.
 
@@ -19292,6 +19402,7 @@ export default class Spreadsheet {
       title: "Package installer",
       topic: "dependencies",
       difficulty: "medium",
+      importance: 1,
       targetMinutes: 40,
       prompt: `Build a small package manager as a \`PackageInstaller\` class.
 
@@ -19884,7 +19995,7 @@ function dueLabel(id) {
   return days <= 0 ? "due today" : days === 1 ? "due tomorrow" : `due in ${days} days`;
 }
 
-const defaultFilters = () => ({ cats: CATEGORIES.map((c) => c.id), topics: [], diff: [], classic: false, source: "all", length: 3, shuffle: true, preferNew: true });
+const defaultFilters = () => ({ cats: CATEGORIES.map((c) => c.id), topics: [], diff: [], classic: false, imp: [], likely: false, source: "all", length: 3, shuffle: true, preferNew: true });
 let filters = Object.assign(defaultFilters(), store.get(K.filters) || {});
 filters.cats = filters.cats.filter((id) => CATEGORIES.some((c) => c.id === id));
 let stats = cleanLogs(store.get(K.stats));       // coding results, see "Results log"
@@ -19935,7 +20046,7 @@ function matching(opts = {}) {
     return c.problems.filter((p) =>
       (!catTopics.length || catTopics.includes(`${c.id}:${p.topic}`)) &&
       (!f.diff.length || f.diff.includes(p.difficulty)) &&
-      (!f.classic || p.classic) &&
+      (hasImp() ? !f.imp.length || f.imp.includes(impOf(p)) : !f.classic || p.classic) &&
       (f.source === "all" ||
         (f.source === "new" && !isSeen(p.id)) ||
         (f.source === "due" && isDue(p.id)) ||
@@ -19943,13 +20054,21 @@ function matching(opts = {}) {
         (f.source === "weak" && WEAK.includes(info(p.id).last))));
   }).map((p) => p.id);
 }
-function orderPool(pool) {
-  if (filters.source === "due") return pool.slice().sort((a, b) => srsOf(a).due - srsOf(b).due);
-  const ids = filters.shuffle ? shuffle(pool) : pool.slice();
+// With "most likely first", must-know problems come before common ones, then deep cuts,
+// each group ordered as before (unseen first, then oldest seen).
+const likelyFirst = () => filters.likely && hasImp();
+function newFirst(ids) {
   if (!filters.preferNew) return ids;
   const fresh = ids.filter((id) => !isSeen(id));
   const old = ids.filter((id) => isSeen(id)).sort((a, b) => lastSeen(a) - lastSeen(b));
   return fresh.concat(old);
+}
+const byImportance = (ids) => ids.slice().sort((a, b) => impOf(P.get(b)) - impOf(P.get(a)));
+function orderPool(pool) {
+  if (filters.source === "due") return pool.slice().sort((a, b) => srsOf(a).due - srsOf(b).due);
+  const ids = filters.shuffle ? shuffle(pool) : pool.slice();
+  if (!likelyFirst()) return newFirst(ids);
+  return [3, 2, 1, 0].flatMap((v) => newFirst(ids.filter((id) => impOf(P.get(id)) === v)));
 }
 function pickIds(pool, length = filters.length) {
   const ordered = orderPool(pool);
@@ -21268,7 +21387,8 @@ function markLessonRead(id) {
 const stage = document.getElementById("stage");
 const actionbarEl = document.getElementById("actionbar");
 const hasLessons = () => CATEGORIES.some((c) => c.lessons.length);
-const pills = (p) => `<span class="pill ${p.difficulty}">${p.difficulty}</span>${p.classic ? '<span class="pill classic">classic</span>' : ""}${p.guided ? '<span class="pill">guided</span>' : ""}`;
+const impPill = (p) => { const v = impOf(p); return v ? `<span class="pill imp${v}" title="How likely a coding round asks this">${IMPS.find((x) => x[0] === v)[1].toLowerCase()}</span>` : p.classic && !hasImp() ? '<span class="pill classic">classic</span>' : ""; };
+const pills = (p) => `<span class="pill ${p.difficulty}">${p.difficulty}</span>${impPill(p)}${p.guided ? '<span class="pill">guided</span>' : ""}`;
 const pathOf = (p) => { const c = catOf(p); return `<span class="q-path">${badge(c, true)}${esc(c.title)} › ${esc(topicName(p))}</span>`; };
 const examplesHtml = (p) => p.examples.length ? `<div class="examples">${p.examples.map((x, i) =>
   `<div class="example"><span class="k">Example ${p.examples.length > 1 ? i + 1 : ""}</span>\n<span class="k">Input:  </span>${esc(x.input)}\n<span class="k">Output: </span>${esc(x.output)}${x.note ? `<span class="nt">${fmt(x.note)}</span>` : ""}</div>`).join("")}</div>` : "";
@@ -21350,7 +21470,11 @@ function renderFilters({ session: withSession }) {
       <div class="f-row"><div class="f-label">Difficulty</div><div class="f-body chips">${DIFFS.map((d) => {
         const on = filters.diff.includes(d);
         return `<button type="button" class="chip ${on ? "on" : ""}" data-act="diff" data-v="${d}" aria-pressed="${on}">${cap(d)}</button>`;
-      }).join("")}<label class="toggle" style="margin-left:8px"><input type="checkbox" id="f-classic" data-change="classic" ${filters.classic ? "checked" : ""}> Classics only</label></div></div>
+      }).join("")}${hasImp() ? "" : `<label class="toggle" style="margin-left:8px"><input type="checkbox" id="f-classic" data-change="classic" ${filters.classic ? "checked" : ""}> Classics only</label>`}</div></div>
+      ${hasImp() ? `<div class="f-row"><div class="f-label">Importance</div><div class="f-body chips">${IMPS.map(([v, label]) => {
+        const on = filters.imp.includes(v);
+        return `<button type="button" class="chip ${on ? "on" : ""}" data-act="imp" data-v="${v}" aria-pressed="${on}">${label}<small>${matching({ imp: [v] }).length}</small></button>`;
+      }).join("")}<label class="toggle" style="margin-left:8px" title="Must-know problems first, then common ones, then deep cuts. How likely a coding round asks each problem is an estimate."><input type="checkbox" id="f-likely" data-change="likely" ${filters.likely ? "checked" : ""}> Most likely first</label></div></div>` : ""}
       <div class="f-row"><div class="f-label">From</div><div class="f-body">${seg("source", [["all", `All (${count("all")})`], ["new", `New to me (${count("new")})`], ["due", `Due for review (${count("due")})`], ["weak", `Weak (${count("weak")})`], ["marked", `★ (${count("marked")})`]])}</div></div>
       ${withSession ? `<div class="f-row"><div class="f-label">Session</div><div class="f-body">${seg("length", [[1, "1"], [3, "3"], [5, "5"], [10, "10"], ["all", "All"]])}
         <label class="toggle" style="margin-left:8px"><input type="checkbox" id="f-shuffle" data-change="shuffle" ${filters.shuffle ? "checked" : ""}> Shuffle</label>
@@ -21648,7 +21772,7 @@ function searchText(p) {
 }
 function browseIds() {
   const words = browseQuery.toLowerCase().split(/\s+/).filter(Boolean);
-  const ids = matching();
+  const ids = likelyFirst() ? byImportance(matching()) : matching();
   return words.length ? ids.filter((id) => { const t = searchText(P.get(id)); return words.every((w) => t.includes(w)); }) : ids;
 }
 function solutionBlock(p, keyPrefix) {
@@ -22780,6 +22904,7 @@ async function onAction(e) {
     case "topic": toggleIn(filters.topics, d.key); saveFilters(); render(); break;
     case "clear-topics": filters.topics = filters.topics.filter((t) => !t.startsWith(d.cat + ":")); saveFilters(); render(); break;
     case "diff": toggleIn(filters.diff, d.v); saveFilters(); render(); break;
+    case "imp": toggleIn(filters.imp, Number(d.v)); saveFilters(); render(); break;
     case "set": filters[d.k] = d.k === "length" && d.v !== "all" ? Number(d.v) : d.v; saveFilters(); render(); break;
     case "reset-filters": filters = defaultFilters(); saveFilters(); render(); break;
     case "start":
@@ -22978,6 +23103,7 @@ stage.addEventListener("change", (e) => {
   const d = e.target.dataset;
   if (d.change === "cat") { toggleIn(filters.cats, d.cat); saveFilters(); render(); }
   else if (d.change === "classic") { filters.classic = e.target.checked; saveFilters(); render(); }
+  else if (d.change === "likely") { filters.likely = e.target.checked; saveFilters(); render(); }
   else if (d.change === "shuffle") { filters.shuffle = e.target.checked; saveFilters(); render(); }
   else if (d.change === "preferNew") { filters.preferNew = e.target.checked; saveFilters(); render(); }
   else if (d.change === "approach-first") { prefs.approachFirst = e.target.checked; savePrefs(); render(); }
