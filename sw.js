@@ -8,7 +8,7 @@
 // - publish.sh rewrites VERSION on every publish that changes a page, which
 //   makes browsers install this worker again and replace the stored pages.
 
-const VERSION = "dbb23cc9aaba";
+const VERSION = "e31999448e13";
 const PAGES_CACHE = "ip-pages-" + VERSION;
 const RUNTIME_CACHE = "ip-runtime-v1";
 
